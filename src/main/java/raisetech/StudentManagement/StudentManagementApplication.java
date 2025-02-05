@@ -37,7 +37,7 @@ public static void main(String[] args){
 	public List<Student> ListAllStudents() {
 		return repository.ListALLStudents();
 	}
-
+//demo
 	@PostMapping("/student")
   public void registerStudent(String name, int age){
 	repository.registerStudent(name,age);
