@@ -22,12 +22,6 @@ public interface StudentRepository {
   List<StudentCourse> searchJavaCourse();
 
   @Select("SELECT course_id, student_id, course_name, startday, endday FROM student_course")
-  @Results({
-      @Result(property = "courseId", column = "course_id"),
-      @Result(property = "studentId", column = "student_id"),
-      @Result(property = "courseName", column = "course_name"),
-      @Result(property = "startday", column = "startday", javaType = java.time.LocalDateTime.class),
-      @Result(property = "endday", column = "endday", javaType = java.time.LocalDateTime.class)
-  })
+
   List<StudentCourse> coursesearch();
 }
