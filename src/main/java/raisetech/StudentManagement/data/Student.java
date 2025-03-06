@@ -9,6 +9,7 @@ public class Student {
 
   private Integer id;
   private String name;
+
   private String hurigana;
   private String nicName;
   private String eMailAddress;

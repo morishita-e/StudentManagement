@@ -10,6 +10,7 @@ import raisetech.StudentManagement.domain.StudentDetail;
 
 @Component
 public class StudentConverter {
+
   public List<StudentDetail> convertStudentDetails(List<Student> students,
       List<StudentCourse> studentCourses) {
     List<StudentDetail> studentDetails = new ArrayList<>();
@@ -26,4 +27,22 @@ public class StudentConverter {
 
     return studentDetails;
   }
+
+  public static StudentDetail createStudentDetail(Student student) {
+    StudentDetail detail = new StudentDetail();
+    detail.setStudent(student);
+
+    return detail;
+  }
+
+  public static StudentDetail createStudentCourseDetail(StudentCourse studentCourse) {
+    StudentDetail detail = new StudentDetail();
+    List<StudentCourse> courses = new ArrayList<>();
+    courses.add(studentCourse);
+    detail.setStudentCourse(courses);
+    return detail;
+  }
 }
+
+
+

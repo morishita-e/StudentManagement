@@ -1,13 +1,18 @@
 package raisetech.StudentManagement.controller;
 
+import java.util.ArrayList;
 import org.springframework.ui.Model;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import raisetech.StudentManagement.controller.converter.StudentConverter;
 import raisetech.StudentManagement.data.Student;
 import raisetech.StudentManagement.data.StudentCourse;
+import raisetech.StudentManagement.domain.StudentDetail;
 import raisetech.StudentManagement.service.StudentService;
 
 @Controller
@@ -32,17 +37,62 @@ public class StudentController {
   }
 
   @GetMapping("/studentList_course")
-  public List<StudentCourse> getStudentcourse_List() {
-    return service.searchStudentcourse_List();
+  public String getStudentCourseList(Model model) {
+    List<Student> students = service.searchStudentList();
+    List<StudentCourse> studentCourses = service.searchStudentcourse_List();
+
+    model.addAttribute("studentCourseList", converter.convertStudentDetails(students, studentCourses));
+    return "studentCourseList";
   }
 
-  @GetMapping("/studentsearch3039")
-  public List<Student> getStudentList3039() {
-    return service.getStudentList3039();
+  @GetMapping("/newStudent")
+  public String newStudent(Model model){
+    model.addAttribute("studentDetail", new StudentDetail());
+    return "registerStudent";
   }
 
-  @GetMapping("/studentcoursejava")
-  public List<StudentCourse> getStudentListJava() {
-    return service.getStudentListJava();
+  @GetMapping("/newStudentCourse")
+  public String newStudentCourse(Model model){
+    StudentDetail studentDetail = new StudentDetail();
+    studentDetail.setStudentCourse(new ArrayList<>());
+    studentDetail.getStudentCourse().add(new StudentCourse());
+    model.addAttribute("studentDetail", studentDetail);
+    return "registerStudentCourse";
+  }
+
+  @GetMapping("/registerStudent")
+  public String showRegisterStudentForm(Model model) {
+    model.addAttribute("studentDetail", new StudentDetail());
+    return "registerStudent";  // フォームのHTMLテンプレート名
+  }
+
+  @GetMapping("/registerStudentCourse")
+  public String showRegisterStudentCourseForm(Model model) {
+    StudentDetail studentDetail = new StudentDetail();
+    studentDetail.setStudentCourse(new ArrayList<>());
+    studentDetail.getStudentCourse().add(new StudentCourse()); // 初期値として1つのコースを追加
+    model.addAttribute("studentDetail", studentDetail);
+    return "registerStudentCourse";  // フォーム表示用のテンプレート
+  }
+
+@PostMapping("/registerStudent")
+  public  String registerStudent(@ModelAttribute StudentDetail studentDetail, BindingResult result){
+if(result.hasErrors()){
+  return "registerStudent";
+}
+service.addStudent(studentDetail);
+
+    return "redirect:/studentList";
+}
+
+  @PostMapping("/registerStudentCourse")
+  public  String registerStudentCourse(@ModelAttribute StudentDetail studentDetail, BindingResult result){
+    if(result.hasErrors()){
+      return "registerStudentCourse";
+    }
+
+      service.addStudentCourse(studentDetail);
+
+    return "redirect:/studentList";
   }
 }

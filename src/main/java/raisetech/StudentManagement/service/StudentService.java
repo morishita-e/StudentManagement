@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import raisetech.StudentManagement.data.Student;
 import raisetech.StudentManagement.data.StudentCourse;
+import raisetech.StudentManagement.domain.StudentDetail;
 import raisetech.StudentManagement.repository.StudentRepository;
 
 @Service
@@ -25,11 +26,17 @@ public class StudentService {
     return repository.coursesearch();
   }
 
-  public List<Student> getStudentList3039() {
-    return repository.searchAGE3039();
+  public void addStudent(StudentDetail studentDetail){
+    Student stundet = studentDetail.getStudent();
+    stundet.setDeleted(false);
+    repository.registerStudent(stundet);
   }
 
-  public List<StudentCourse> getStudentListJava() {
-    return repository.searchJavaCourse();
-  }
+  public void addStudentCourse(StudentDetail studentDetail){
+    List<StudentCourse> studentCourses = studentDetail.getStudentCourse();
+
+    for(StudentCourse course : studentCourses){
+    repository.registerStudentCourse(course);
+    }
+}
 }
