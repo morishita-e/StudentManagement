@@ -35,13 +35,13 @@ public class StudentConverter {
     return detail;
   }
 
-  public static StudentDetail createStudentCourseDetail(StudentCourse studentCourse) {
-    StudentDetail detail = new StudentDetail();
-    List<StudentCourse> courses = new ArrayList<>();
-    courses.add(studentCourse);
-    detail.setStudentCourse(courses);
-    return detail;
-  }
+  //public static StudentDetail createStudentCourseDetail(StudentCourse studentCourse) {
+    //StudentDetail detail = new StudentDetail();
+    //List<StudentCourse> courses = new ArrayList<>();
+    //courses.add(studentCourse);
+    //detail.setStudentCourse(courses);
+    //return detail;
+  //}
 }
 
 

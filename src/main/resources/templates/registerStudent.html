@@ -14,7 +14,7 @@
   </div>
 
   <div>
-    <label for="hurigana">ふりがな:</label>
+    <label for="hurigana">フリガナ:</label>
     <input type="text" id="hurigana" th:field="*{student.hurigana}" required/>
   </div>
 
@@ -35,21 +35,30 @@
 
   <div>
     <label for="age">年齢:</label>
-    <input type="text" id="age" th:field="*{student.age}" required/>
+    <input type="text" id="age" th:field="*{student.age}" />
   </div>
 
   <div>
     <label for="gender">性別:</label>
-    <input type="text" id="gender" th:field="*{student.gender}" required/>
+    <input type="text" id="gender" th:field="*{student.gender}" />
   </div>
 
   <div>
     <label for="remark">備考:</label>
-    <input type="text" id="remark" th:field="*{student.remark}" required/>
+    <input type="text" id="remark" th:field="*{student.remark}" />
   </div>
-            <div>
-              <button type="submit">登録</button>
-            </div>
-          </form>
+
+  <div th:each="course, stat : *{studentCourse}">
+    <label for="courseName" th:for="studentCourse.__${stat.index}__.courseName">コース名</label>
+  <input type="text" id="courseName" th:id="studentCourse.__${stat.index}__.courseName" required/>
+
+<!--    <label th:for="'courseName' + ${stat.index}">コース名:</label>-->
+<!--    <input type="text" th:id="'courseName' + ${stat.index}"-->
+<!--           th:field="*{studentCourse[__${stat.index}__].courseName}" required/>-->
+ </div>
+  <div>
+    <button type="submit">登録</button>
+  </div>
+</form>
 </body>
 </html>

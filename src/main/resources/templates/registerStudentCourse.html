@@ -11,27 +11,32 @@
   <div th:each="course, iterStat : ${studentDetail.studentCourse}">
     <div>
       <label th:for="'courseId' + ${iterStat.index}">コースID:</label>
-      <input type="text" th:id="'courseId' + ${iterStat.index}" th:field="*{studentCourse[__${iterStat.index}__].courseId}" required/>
+      <input type="text" th:id="'courseId' + ${iterStat.index}"
+             th:field="*{studentCourse[__${iterStat.index}__].courseId}" required/>
     </div>
 
     <div>
       <label th:for="'studentId' + ${iterStat.index}">生徒ID:</label>
-      <input type="text" th:id="'studentId' + ${iterStat.index}" th:field="*{studentCourse[__${iterStat.index}__].studentId}" required/>
+      <input type="text" th:id="'studentId' + ${iterStat.index}"
+             th:field="*{studentCourse[__${iterStat.index}__].studentId}" required/>
     </div>
 
     <div>
       <label th:for="'courseName' + ${iterStat.index}">コース名:</label>
-      <input type="text" th:id="'courseName' + ${iterStat.index}" th:field="*{studentCourse[__${iterStat.index}__].courseName}" required/>
+      <input type="text" th:id="'courseName' + ${iterStat.index}"
+             th:field="*{studentCourse[__${iterStat.index}__].courseName}" required/>
     </div>
 
     <div>
       <label th:for="'startday' + ${iterStat.index}">開始日:</label>
-      <input type="text" th:id="'startday' + ${iterStat.index}" th:field="*{studentCourse[__${iterStat.index}__].startday}" required/>
+      <input type="text" th:id="'startday' + ${iterStat.index}"
+             th:field="*{studentCourse[__${iterStat.index}__].startday}" required/>
     </div>
 
     <div>
       <label th:for="'endday' + ${iterStat.index}">終了日:</label>
-      <input type="text" th:id="'endday' + ${iterStat.index}" th:field="*{studentCourse[__${iterStat.index}__].endday}" required/>
+      <input type="text" th:id="'endday' + ${iterStat.index}"
+             th:field="*{studentCourse[__${iterStat.index}__].endday}" required/>
     </div>
   </div>
   <div>

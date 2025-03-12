@@ -1,6 +1,7 @@
 package raisetech.StudentManagement.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import org.springframework.ui.Model;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,24 +42,28 @@ public class StudentController {
     List<Student> students = service.searchStudentList();
     List<StudentCourse> studentCourses = service.searchStudentcourse_List();
 
-    model.addAttribute("studentCourseList", converter.convertStudentDetails(students, studentCourses));
+    model.addAttribute("studentCourseList",
+        converter.convertStudentDetails(students, studentCourses));
     return "studentCourseList";
   }
 
   @GetMapping("/newStudent")
-  public String newStudent(Model model){
-    model.addAttribute("studentDetail", new StudentDetail());
+  public String newStudent(Model model) {
+    StudentDetail studentDetail = new StudentDetail();
+    studentDetail.setStudent(new Student());
+    studentDetail.setStudentCourse(Arrays.asList(new StudentCourse()));
+    model.addAttribute("studentDetail", studentDetail);
     return "registerStudent";
   }
 
-  @GetMapping("/newStudentCourse")
-  public String newStudentCourse(Model model){
-    StudentDetail studentDetail = new StudentDetail();
-    studentDetail.setStudentCourse(new ArrayList<>());
-    studentDetail.getStudentCourse().add(new StudentCourse());
-    model.addAttribute("studentDetail", studentDetail);
-    return "registerStudentCourse";
-  }
+  //@GetMapping("/newStudentCourse")
+  //public String newStudentCourse(Model model) {
+    //StudentDetail studentDetail = new StudentDetail();
+    //studentDetail.setStudentCourse(new ArrayList<>());
+    //studentDetail.getStudentCourse().add(new StudentCourse());
+    //model.addAttribute("studentDetail", studentDetail);
+    //return "registerStudentCourse";
+  //}
 
   @GetMapping("/registerStudent")
   public String showRegisterStudentForm(Model model) {
@@ -66,33 +71,34 @@ public class StudentController {
     return "registerStudent";  // フォームのHTMLテンプレート名
   }
 
-  @GetMapping("/registerStudentCourse")
-  public String showRegisterStudentCourseForm(Model model) {
-    StudentDetail studentDetail = new StudentDetail();
-    studentDetail.setStudentCourse(new ArrayList<>());
-    studentDetail.getStudentCourse().add(new StudentCourse()); // 初期値として1つのコースを追加
-    model.addAttribute("studentDetail", studentDetail);
-    return "registerStudentCourse";  // フォーム表示用のテンプレート
-  }
+ // @GetMapping("/registerStudentCourse")
+  //public String showRegisterStudentCourseForm(Model model) {
+    //StudentDetail studentDetail = new StudentDetail();
+    //studentDetail.setStudentCourse(new ArrayList<>());
+    //studentDetail.getStudentCourse().add(new StudentCourse()); // 初期値として1つのコースを追加
+    //model.addAttribute("studentDetail", studentDetail);
+    //return "registerStudentCourse";  // フォーム表示用のテンプレート
+  //}
 
-@PostMapping("/registerStudent")
-  public  String registerStudent(@ModelAttribute StudentDetail studentDetail, BindingResult result){
-if(result.hasErrors()){
-  return "registerStudent";
-}
-service.addStudent(studentDetail);
-
-    return "redirect:/studentList";
-}
-
-  @PostMapping("/registerStudentCourse")
-  public  String registerStudentCourse(@ModelAttribute StudentDetail studentDetail, BindingResult result){
-    if(result.hasErrors()){
-      return "registerStudentCourse";
+  @PostMapping("/registerStudent")
+  public String registerStudent(@ModelAttribute StudentDetail studentDetail, BindingResult result) {
+    if (result.hasErrors()) {
+      return "registerStudent";
     }
-
-      service.addStudentCourse(studentDetail);
+    service.addStudent(studentDetail);
 
     return "redirect:/studentList";
   }
+
+ // @PostMapping("/registerStudentCourse")
+  //public String registerStudentCourse(@ModelAttribute StudentDetail studentDetail,
+    //  BindingResult result) {
+    //if (result.hasErrors()) {
+     // return "registerStudentCourse";
+   // }
+
+   // service.addStudentCourse(studentDetail);
+
+    //return "redirect:/studentList";
+  //}
 }

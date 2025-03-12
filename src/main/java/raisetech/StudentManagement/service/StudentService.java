@@ -1,8 +1,10 @@
 package raisetech.StudentManagement.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import raisetech.StudentManagement.data.Student;
 import raisetech.StudentManagement.data.StudentCourse;
 import raisetech.StudentManagement.domain.StudentDetail;
@@ -26,17 +28,25 @@ public class StudentService {
     return repository.coursesearch();
   }
 
-  public void addStudent(StudentDetail studentDetail){
-    Student stundet = studentDetail.getStudent();
-    stundet.setDeleted(false);
-    repository.registerStudent(stundet);
+  @Transactional
+  public void addStudent(StudentDetail studentDetail) {
+    Student student = studentDetail.getStudent();
+    student.setDeleted(false);
+    repository.registerStudent(student);
+    for (StudentCourse studentCourse : studentDetail.getStudentCourse()) {
+      studentCourse.setStudentId(studentDetail.getStudent().getId());
+      studentCourse.setStartday(LocalDateTime.now());
+      studentCourse.setEndday(LocalDateTime.now().plusYears(1));
+
+      repository.registerStudentCourse(studentCourse);
+    }
   }
 
-  public void addStudentCourse(StudentDetail studentDetail){
-    List<StudentCourse> studentCourses = studentDetail.getStudentCourse();
+  //public void addStudentCourse(StudentDetail studentDetail) {
+  //List<StudentCourse> studentCourses = studentDetail.getStudentCourse();
 
-    for(StudentCourse course : studentCourses){
-    repository.registerStudentCourse(course);
-    }
-}
+  //for (StudentCourse course : studentCourses) {
+  //repository.registerStudentCourse(course);
+  //}
+  //}
 }
