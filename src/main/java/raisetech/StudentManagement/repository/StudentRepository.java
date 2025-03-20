@@ -26,7 +26,6 @@ public interface StudentRepository {
   @Options(useGeneratedKeys = true, keyProperty = "courseId")
   void registerStudentCourse(StudentCourse studentCourse);
 
-
   @Select("SELECT * FROM student WHERE id = #{id}")
   Student findStudentById(@Param("id") int id);
 
