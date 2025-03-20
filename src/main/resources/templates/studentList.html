@@ -1,37 +1,21 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title>受講生一覧</title>
+  <title>受講生リスト</title>
 </head>
 <body>
-<h1>受講生一覧</h1>
+<h1>受講生リスト</h1>
 <table border="1">
-  <thead>
   <tr>
     <th>ID</th>
     <th>名前</th>
-    <th>カナ名</th>
-    <th>ニックネーム</th>
-    <th>メールアドレス</th>
-    <th>地域</th>
-    <th>年齢</th>
-    <th>性別</th>
-    <th>備考</th>
   </tr>
-  </thead>
-  <tbody>
-  <tr th:each="studentDetail : ${studentList}">
-    <td th:text="${studentDetail.student.id}">1</td>
-    <td th:text="${studentDetail.student.name}">山田太郎</td>
-    <td th:text="${studentDetail.student.hurigana}">ヤマダタロウ</td>
-    <td th:text="${studentDetail.student.nicName}">タロー</td>
-    <td th:text="${studentDetail.student.eMailAddress}">taro@example.com</td>
-    <td th:text="${studentDetail.student.liveArea}">Tokyo</td>
-    <td th:text="${studentDetail.student.age}">20</td>
-    <td th:text="${studentDetail.student.gender}">男性</td>
-    <td th:text="${studentDetail.student.remark}">特になし</td>
+  <tr th:each="student : ${students}">
+    <td th:text="${student.id}"></td>
+    <td>
+      <a th:href="@{/student/{id}(id=${student.id})}" th:text="${student.name}"></a>
+    </td>
   </tr>
-  </tbody>
 </table>
 </body>
 </html>

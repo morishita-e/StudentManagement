@@ -40,13 +40,45 @@ public class StudentService {
 
       repository.registerStudentCourse(studentCourse);
     }
+
+
   }
 
-  //public void addStudentCourse(StudentDetail studentDetail) {
-  //List<StudentCourse> studentCourses = studentDetail.getStudentCourse();
+  @Transactional
+  public void updateStudentData(StudentDetail studentDetail) {
 
-  //for (StudentCourse course : studentCourses) {
-  //repository.registerStudentCourse(course);
-  //}
-  //}
+    Student student = studentDetail.getStudent();
+
+    // 学生IDが存在しない場合、エラーをスロー
+    if (repository.findStudentById(student.getId()) == null) {
+      throw new RuntimeException(student.getId() + "は見つかりませんでした");
+    }
+
+    // 学生情報を更新
+    repository.updateStudent(student);
+
+    // コース情報は編集されない場合、処理を行わない
+    if (studentDetail.getStudentCourse() != null && !studentDetail.getStudentCourse().isEmpty()) {
+      // ここでコース情報が存在しない場合はスキップ
+      return;
+    }
+  }
+
+  // 学生IDに基づいてコースを取得するメソッド
+  public List<StudentCourse> searchStudentcourseByStudentId(int studentId) {
+    return repository.findCoursesByStudentId(studentId);  // repository からコースリストを取得
+  }
+
+
+  public Student searchStudentById(int id) {
+    Student student = repository.findStudentById(id);
+
+    // 学生が見つからない場合は例外を投げる
+    if (student == null) {
+      throw new RuntimeException("受講生が見つかりません: " + id);
+    }
+
+    return student;
+
+}
 }
