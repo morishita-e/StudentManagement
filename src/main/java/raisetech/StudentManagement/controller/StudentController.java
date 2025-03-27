@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import raisetech.StudentManagement.controller.converter.StudentConverter;
 import raisetech.StudentManagement.data.Student;
 import raisetech.StudentManagement.data.StudentCourse;
@@ -66,17 +67,7 @@ public class StudentController {
     }
   }
 
-  @GetMapping("/studentList_course")
-  public String getStudentCourseList(Model model) {
-    // 学生リストとコースリストを取得
-    List<Student> students = service.searchStudentList();
-    List<StudentCourse> studentCourses = service.searchStudentcourse_List();
-// 学生ごとにコースを関連付け
-    model.addAttribute("studentCourseList",
-        converter.convertStudentDetails(students, studentCourses));
-    // studentCourseList.htmlにデータを渡す
-    return "studentCourseList";
-  }
+
 
   @GetMapping("/newStudent")
   public String newStudent(Model model) {
@@ -109,24 +100,29 @@ public class StudentController {
     // 学生の受講コース情報を取得
     List<StudentCourse> studentCourses = studentRepository.findCoursesByStudentId(studentId);
 
-    // 取得したstudentCoursesがnullでないことを確認
-    if (studentCourses != null && !studentCourses.isEmpty()) {
-      // startday と endday が null でないか確認
-      for (StudentCourse studentCourse : studentCourses) {
-        System.out.println("Startday: " + studentCourse.getStartday() + ", Endday: " + studentCourse.getEndday());
-      }
-    }
-
+    // 取得したコース情報を studentDetail にセット
     studentDetail.setStudentCourse(studentCourses);
     model.addAttribute("studentDetail", studentDetail);
+
     return "updateStudent";
   }
 
   @PostMapping("/dataedit/{id}")
-  public String updateStudent(@PathVariable int id, @ModelAttribute StudentDetail studentDetail) {
+  public String updateStudent(@PathVariable int id, @ModelAttribute StudentDetail studentDetail, BindingResult result) {
+    // バリデーションエラーがあればフォームに戻す
+    if (result.hasErrors()) {
+      return "updateStudent";  // エラーメッセージを表示するため、フォームに戻す
+    }
+
     studentDetail.getStudent().setId(id);  // studentDetail の student に ID をセット
-    service.updateStudentData(studentDetail);  // updateStudentData を呼び出し
-    return "redirect:/studentList";        // 更新後にリダイレクト
+
+    try {
+      service.updateStudentData(studentDetail);  // 学生情報の更新
+      return "redirect:/studentList";        // 更新後にリダイレクト
+    } catch (Exception e) {
+      e.printStackTrace();
+      return "errorPage";   // エラーが発生した場合、エラーページに遷移
+    }
   }
 
   @PostMapping("/registerStudent")
@@ -139,5 +135,45 @@ public class StudentController {
     return "redirect:/studentList";
   }
 
+  @PostMapping("/updateStudent")
+  public String updateStudent(
+      @ModelAttribute StudentDetail studentDetail,
+      @RequestParam(value = "cancelUpdate", required = false) String cancelUpdate
+  ) {
+    try {
+      //System.out.println("updateStudent method called");
 
+      Student student = studentDetail.getStudent();
+      List<StudentCourse> studentCourses = studentDetail.getStudentCourse();
+
+      // ✅ キャンセルがチェックされていた場合
+      if (cancelUpdate != null) {
+        //System.out.println("Update canceled");
+        student.setIsDeleted(true);  // 学生の削除フラグを true に設定
+        studentRepository.updateStudent(student);  // 学生の情報を更新
+        return "redirect:/studentList";  // リストにリダイレクト
+      }
+
+      // 通常の更新処理
+      if (student.getIsDeleted() == null) {
+        student.setIsDeleted(false);  // 削除フラグを false に設定
+      }
+
+      studentRepository.updateStudent(student);  // 学生情報を更新
+
+      // 受講コースの更新処理
+      for (StudentCourse course : studentCourses) {
+        if (course.getCourseId() != null) {  // 既存のコース情報がある場合は更新
+          studentRepository.updateStudentCourse(course);
+        } else {  // 新しいコースを追加
+          studentRepository.addStudentCourse(course);
+        }
+      }
+
+      return "redirect:/studentList";  // リストにリダイレクト
+    } catch (Exception e) {
+      e.printStackTrace();
+      return "errorPage";  // エラーページにリダイレクト
+    }
+  }
 }

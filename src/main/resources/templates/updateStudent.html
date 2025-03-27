@@ -14,7 +14,7 @@
 <h1>受講生情報更新</h1>
 
 <h2>新規情報を入力してください</h2>
-<form th:action="@{/dataedit/{id}(id=${studentDetail.student.id})}" th:object="${studentDetail}" method="post">
+<form th:action="@{/updateStudent}" th:object="${studentDetail}" method="post">
   <div>
     <label for="id">学生ID:</label>
     <input type="text" id="id" th:field="*{student.id}" readonly/>
@@ -68,6 +68,9 @@
   <div th:if="${studentDetail.studentCourse != null and !studentDetail.studentCourse.isEmpty()}">
     <div th:each="course, stat : ${studentDetail.studentCourse}">
       <fieldset>
+        <!-- コースID (隠しフィールド) -->
+        <input type="hidden" th:field="*{studentCourse[__${stat.index}__].courseId}" />
+
         <div>
           <label>コース名:</label>
           <input type="text" th:field="*{studentCourse[__${stat.index}__].courseName}" />
@@ -75,20 +78,23 @@
 
         <div>
           <label>開始日:</label>
-          <input type="datetime-local" th:field="*{studentCourse[__${stat.index}__].startday}" />
+          <input type="datetime-local" th:field="*{studentCourse[__${stat.index}__].startday}" readonly/>
         </div>
 
         <div>
           <label>終了日:</label>
-          <input type="datetime-local" th:field="*{studentCourse[__${stat.index}__].endday}" />
+          <input type="datetime-local" th:field="*{studentCourse[__${stat.index}__].endday}" readonly/>
         </div>
       </fieldset>
     </div>
   </div>
 
-  <div>
-    <button type="submit">更新</button>
-  </div>
+  <!-- ✅ キャンセル用のチェックボックスを追加 -->
+  <label>
+    <input type="checkbox" name="cancelUpdate" value="true"> キャンセル
+  </label>
+
+  <button type="submit">更新</button>
 </form>
 </body>
 </html>

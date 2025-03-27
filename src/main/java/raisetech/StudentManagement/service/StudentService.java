@@ -24,14 +24,11 @@ public class StudentService {
     return repository.search();
   }
 
-  public List<StudentCourse> searchStudentcourse_List() {
-    return repository.coursesearch();
-  }
 
   @Transactional
   public void addStudent(StudentDetail studentDetail) {
     Student student = studentDetail.getStudent();
-    student.setDeleted(false);
+    student.setIsDeleted(false);
     repository.registerStudent(student);
     for (StudentCourse studentCourse : studentDetail.getStudentCourse()) {
       studentCourse.setStudentId(studentDetail.getStudent().getId());
@@ -57,16 +54,18 @@ public class StudentService {
     // 学生情報を更新
     repository.updateStudent(student);
 
-    // コース情報は編集されない場合、処理を行わない
-    if (studentDetail.getStudentCourse() != null && !studentDetail.getStudentCourse().isEmpty()) {
-      // ここでコース情報が存在しない場合はスキップ
-      return;
+    // コース情報がある場合は更新
+    for (StudentCourse studentCourse : studentDetail.getStudentCourse()) {
+      repository.updateStudentCourse(studentCourse);
+
     }
   }
 
   // 学生IDに基づいてコースを取得するメソッド
   public List<StudentCourse> searchStudentcourseByStudentId(int studentId) {
-    return repository.findCoursesByStudentId(studentId);  // repository からコースリストを取得
+    List<StudentCourse> courses = repository.findCoursesByStudentId(studentId);
+
+    return courses;
   }
 
 

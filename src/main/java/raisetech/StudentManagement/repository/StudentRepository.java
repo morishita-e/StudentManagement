@@ -1,7 +1,6 @@
 package raisetech.StudentManagement.repository;
 
 import java.util.List;
-import java.util.Optional;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
@@ -15,7 +14,7 @@ import raisetech.StudentManagement.data.StudentCourse;
 
 public interface StudentRepository {
 
-  @Select("SELECT * FROM student")
+  @Select("SELECT * FROM student WHERE isDeleted = false")
   List<Student> search();
 
   @Insert("INSERT INTO student (name, hurigana, nicName, eMailAddress, liveArea, age, gender, remark) VALUES (#{name}, #{hurigana}, #{nicName}, #{eMailAddress}, #{liveArea}, #{age}, #{gender}, #{remark})")
@@ -29,18 +28,21 @@ public interface StudentRepository {
   @Select("SELECT * FROM student WHERE id = #{id}")
   Student findStudentById(@Param("id") int id);
 
-  @Update("UPDATE student SET name = #{name}, hurigana = #{hurigana}, nicName = #{nicName}, eMailAddress = #{eMailAddress}, liveArea = #{liveArea}, age = #{age}, gender = #{gender}, remark = #{remark} WHERE id = #{id}")
-    void updateStudent(Student student);
+  @Update("UPDATE student SET name = #{name}, hurigana = #{hurigana}, nicName = #{nicName}, eMailAddress = #{eMailAddress}, liveArea = #{liveArea}, age = #{age}, gender = #{gender}, remark = #{remark}, isDeleted = #{isDeleted} WHERE id = #{id}")
+  void updateStudent(Student student);
 
   @Select("SELECT * FROM student_course WHERE courseId = #{courseId}")
   StudentCourse findStudentCourseById(@Param("courseId") int courseId);
 
-  @Select("SELECT * FROM student_course WHERE studentId = #{studentId}")
+  @Select("SELECT courseId, studentId, courseName, startday, endday FROM student_course WHERE studentId = #{studentId}")
   List<StudentCourse> findCoursesByStudentId(@Param("studentId") int studentId);
 
-  @Update("UPDATE student_course SET courseName = #{courseName}, startday = #{startday}, endday = #{endday} WHERE courseId = #{courseId}")
+  @Update("UPDATE student_course SET courseName = #{courseName} WHERE courseId = #{courseId}")
   void updateStudentCourse(StudentCourse studentCourse);
 
-  @Select("SELECT courseId, studentId, courseName, startday, endday FROM student_course")
-  List<StudentCourse> coursesearch();
+
+  // 追加: 新しい受講コースを追加
+  @Insert("INSERT INTO student_course (studentId, courseName, startday, endday) VALUES (#{studentId}, #{courseName}, #{startday}, #{endday})")
+  @Options(useGeneratedKeys = true, keyProperty = "courseId")
+  void addStudentCourse(StudentCourse studentCourse);
 }
