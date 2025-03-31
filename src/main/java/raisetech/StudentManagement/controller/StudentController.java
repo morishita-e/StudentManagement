@@ -27,7 +27,8 @@ public class StudentController {
   private StudentRepository studentRepository;
 
   @Autowired
-  public StudentController(StudentService service, StudentConverter converter,StudentRepository studentRepository) {
+  public StudentController(StudentService service, StudentConverter converter,
+      StudentRepository studentRepository) {
     this.service = service;
     this.converter = converter;
     this.studentRepository = studentRepository;
@@ -68,7 +69,6 @@ public class StudentController {
   }
 
 
-
   @GetMapping("/newStudent")
   public String newStudent(Model model) {
     StudentDetail studentDetail = new StudentDetail();
@@ -89,26 +89,27 @@ public class StudentController {
   }
 
   @GetMapping("/dataedit/{id}")
-  public String editStudent(@PathVariable("id") String id, Model model) {
-    Integer studentId = Integer.parseInt(id); // StringをIntegerに変換
+  public String editStudent(@PathVariable("id") int id, Model model) {
     StudentDetail studentDetail = new StudentDetail();
 
     // 学生情報を取得
-    Student student = studentRepository.findStudentById(studentId);
+    Student student = studentRepository.findStudentById(id);
     studentDetail.setStudent(student);
 
     // 学生の受講コース情報を取得
-    List<StudentCourse> studentCourses = studentRepository.findCoursesByStudentId(studentId);
-
-    // 取得したコース情報を studentDetail にセット
+    List<StudentCourse> studentCourses = studentRepository.findCoursesByStudentId(id);
     studentDetail.setStudentCourse(studentCourses);
+
+    // isDeleted の状態をモデルに渡す
     model.addAttribute("studentDetail", studentDetail);
+    model.addAttribute("isDeleted", student.getIsDeleted());
 
     return "updateStudent";
   }
 
   @PostMapping("/dataedit/{id}")
-  public String updateStudent(@PathVariable int id, @ModelAttribute StudentDetail studentDetail, BindingResult result) {
+  public String updateStudent(@PathVariable int id, @ModelAttribute StudentDetail studentDetail,
+      BindingResult result) {
     // バリデーションエラーがあればフォームに戻す
     if (result.hasErrors()) {
       return "updateStudent";  // エラーメッセージを表示するため、フォームに戻す
@@ -141,25 +142,14 @@ public class StudentController {
       @RequestParam(value = "cancelUpdate", required = false) String cancelUpdate
   ) {
     try {
-      //System.out.println("updateStudent method called");
-
       Student student = studentDetail.getStudent();
       List<StudentCourse> studentCourses = studentDetail.getStudentCourse();
 
-      // ✅ キャンセルがチェックされていた場合
-      if (cancelUpdate != null) {
-        //System.out.println("Update canceled");
-        student.setIsDeleted(true);  // 学生の削除フラグを true に設定
-        studentRepository.updateStudent(student);  // 学生の情報を更新
-        return "redirect:/studentList";  // リストにリダイレクト
-      }
+      // `cancelUpdate` が null なら false（チェックなし）
+      student.setIsDeleted(cancelUpdate != null);
 
-      // 通常の更新処理
-      if (student.getIsDeleted() == null) {
-        student.setIsDeleted(false);  // 削除フラグを false に設定
-      }
-
-      studentRepository.updateStudent(student);  // 学生情報を更新
+      // 学生情報を更新
+      studentRepository.updateStudent(student);
 
       // 受講コースの更新処理
       for (StudentCourse course : studentCourses) {

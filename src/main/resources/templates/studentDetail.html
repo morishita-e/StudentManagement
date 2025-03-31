@@ -18,21 +18,30 @@
 <h2>受講コース情報</h2>
 <table border="1">
   <tr>
+    <th>コースID</th>
     <th>コース名</th>
     <th>開始日</th>
     <th>終了日</th>
   </tr>
   <tr th:each="course : ${studentDetail.studentCourse}">
+    <td>
+      <input type="text" th:value="${course.courseId}" readonly>
+    </td>
     <td th:text="${course.courseName}"></td>
     <td th:text="${#temporals.format(course.startday, 'yyyy-MM-dd HH:mm:ss')}"></td>
     <td th:text="${#temporals.format(course.endday, 'yyyy-MM-dd HH:mm:ss')}"></td>
   </tr>
 </table>
 
-<!-- 学生情報を編集するリンクを追加 -->
-<a th:href="@{/dataedit/{id}(id=${studentDetail.student.id})}">学生情報を編集</a>
+<!-- 学生情報を編集するリンク -->
+<a th:href="@{/dataedit/{id}(id=${studentDetail.student.id})}">
+  <button>学生情報を編集</button>
+</a>
 
-<!-- 戻るボタンを修正 -->
-<a href="/studentList">戻る</a>
+<!-- 戻るボタン -->
+<a href="/studentList">
+  <button>戻る</button>
+</a>
+
 </body>
 </html>

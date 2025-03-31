@@ -47,7 +47,7 @@
 
   <div>
     <label for="age">年齢:</label>
-    <input type="number" id="age" th:field="*{student.age}" min="0" />
+    <input type="number" id="age" th:field="*{student.age}" min="0"/>
   </div>
 
   <div>
@@ -61,7 +61,7 @@
 
   <div>
     <label for="remark">備考:</label>
-    <input type="text" id="remark" th:field="*{student.remark}" />
+    <input type="text" id="remark" th:field="*{student.remark}"/>
   </div>
 
   <!-- 受講コース情報 -->
@@ -69,21 +69,23 @@
     <div th:each="course, stat : ${studentDetail.studentCourse}">
       <fieldset>
         <!-- コースID (隠しフィールド) -->
-        <input type="hidden" th:field="*{studentCourse[__${stat.index}__].courseId}" />
+        <input type="hidden" th:field="*{studentCourse[__${stat.index}__].courseId}"/>
 
         <div>
           <label>コース名:</label>
-          <input type="text" th:field="*{studentCourse[__${stat.index}__].courseName}" />
+          <input type="text" th:field="*{studentCourse[__${stat.index}__].courseName}"/>
         </div>
 
         <div>
           <label>開始日:</label>
-          <input type="datetime-local" th:field="*{studentCourse[__${stat.index}__].startday}" readonly/>
+          <input type="datetime-local" th:field="*{studentCourse[__${stat.index}__].startday}"
+                 readonly/>
         </div>
 
         <div>
           <label>終了日:</label>
-          <input type="datetime-local" th:field="*{studentCourse[__${stat.index}__].endday}" readonly/>
+          <input type="datetime-local" th:field="*{studentCourse[__${stat.index}__].endday}"
+                 readonly/>
         </div>
       </fieldset>
     </div>
@@ -91,10 +93,14 @@
 
   <!-- ✅ キャンセル用のチェックボックスを追加 -->
   <label>
-    <input type="checkbox" name="cancelUpdate" value="true"> キャンセル
+    <input type="checkbox" name="cancelUpdate" th:checked="${studentDetail.student.isDeleted}">
+    キャンセル
   </label>
 
   <button type="submit">更新</button>
+  <a th:href="@{/studentList}">
+    <button type="button">戻る</button>
+  </a>
 </form>
 </body>
 </html>
