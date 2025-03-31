@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>受講生詳細</title>
+</head>
+<body>
+<h1>受講生詳細</h1>
+<p><strong>ID:</strong> <span th:text="${studentDetail.student.id}"></span></p>
+<p><strong>名前:</strong> <span th:text="${studentDetail.student.name}"></span></p>
+<p><strong>フリガナ:</strong> <span th:text="${studentDetail.student.hurigana}"></span></p>
+<p><strong>ニックネーム:</strong> <span th:text="${studentDetail.student.nicName}"></span></p>
+<p><strong>Eメール:</strong> <span th:text="${studentDetail.student.eMailAddress}"></span></p>
+<p><strong>住所:</strong> <span th:text="${studentDetail.student.liveArea}"></span></p>
+<p><strong>年齢:</strong> <span th:text="${studentDetail.student.age}"></span></p>
+<p><strong>性別:</strong> <span th:text="${studentDetail.student.gender}"></span></p>
+<p><strong>備考:</strong> <span th:text="${studentDetail.student.remark}"></span></p>
+
+<h2>受講コース情報</h2>
+<table border="1">
+  <tr>
+    <th>コースID</th>
+    <th>コース名</th>
+    <th>開始日</th>
+    <th>終了日</th>
+  </tr>
+  <tr th:each="course : ${studentDetail.studentCourse}">
+    <td>
+      <input type="text" th:value="${course.courseId}" readonly>
+    </td>
+    <td th:text="${course.courseName}"></td>
+    <td th:text="${#temporals.format(course.startday, 'yyyy-MM-dd HH:mm:ss')}"></td>
+    <td th:text="${#temporals.format(course.endday, 'yyyy-MM-dd HH:mm:ss')}"></td>
+  </tr>
+</table>
+
+<!-- 学生情報を編集するリンク -->
+<a th:href="@{/dataedit/{id}(id=${studentDetail.student.id})}">
+  <button>学生情報を編集</button>
+</a>
+
+<!-- 戻るボタン -->
+<a href="/studentList">
+  <button>戻る</button>
+</a>
+
+</body>
+</html>

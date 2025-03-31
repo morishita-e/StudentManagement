@@ -10,6 +10,7 @@ import raisetech.StudentManagement.domain.StudentDetail;
 
 @Component
 public class StudentConverter {
+
   public List<StudentDetail> convertStudentDetails(List<Student> students,
       List<StudentCourse> studentCourses) {
     List<StudentDetail> studentDetails = new ArrayList<>();
@@ -26,4 +27,29 @@ public class StudentConverter {
 
     return studentDetails;
   }
+
+  //  単一のStudentとそのコースの情報を使ってStudentDetailを作成
+  public StudentDetail convertStudentDetail(Student student, List<StudentCourse> studentCourses) {
+    StudentDetail studentDetail = new StudentDetail();
+    studentDetail.setStudent(student);
+
+    List<StudentCourse> convertStudentCourses = studentCourses.stream()
+        .filter(studentCourse -> student.getId().equals(studentCourse.getStudentId()))
+        .collect(Collectors.toList());
+    studentDetail.setStudentCourse(convertStudentCourses);
+
+    return studentDetail;
+  }
+
+  public static StudentDetail createStudentDetail(Student student) {
+    StudentDetail detail = new StudentDetail();
+    detail.setStudent(student);
+
+    return detail;
+  }
+
+
 }
+
+
+

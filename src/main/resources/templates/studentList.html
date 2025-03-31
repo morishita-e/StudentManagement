@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>受講生リスト</title>
+</head>
+<body>
+<h1>受講生リスト</h1>
+<table border="1">
+  <tr>
+    <th>ID</th>
+    <th>名前</th>
+    <th>ふりがな</th>
+    <th>ニックネーム</th>
+    <th>メールアドレス</th>
+    <th>居住エリア</th>
+    <th>年齢</th>
+    <th>性別</th>
+    <th>備考</th>
+    <th>キャンセル</th>
+    <th>編集</th>
+  </tr>
+  <tr th:each="student : ${students}">
+    <td th:text="${student.id}"></td>
+    <td>
+      <a th:href="@{/student/{id}(id=${student.id})}" th:text="${student.name}"></a>
+    </td>
+    <td th:text="${student.hurigana}"></td>
+    <td th:text="${student.nicName}"></td>
+    <td th:text="${student.eMailAddress}"></td>
+    <td th:text="${student.liveArea}"></td>
+    <td th:text="${student.age}"></td>
+    <td th:text="${student.gender}"></td>
+    <td th:text="${student.remark}"></td>
+    <td>
+      <input type="checkbox" disabled th:checked="${student.isDeleted}">
+    </td>
+    <td>
+      <a th:href="@{/dataedit/{id}(id=${student.id})}">編集</a>
+    </td>
+  </tr>
+</table>
+</body>
+</html>

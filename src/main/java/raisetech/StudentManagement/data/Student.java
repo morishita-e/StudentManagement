@@ -9,6 +9,7 @@ public class Student {
 
   private Integer id;
   private String name;
+
   private String hurigana;
   private String nicName;
   private String eMailAddress;
@@ -16,6 +17,6 @@ public class Student {
   private int age;
   private String gender;
   private String remark;
-  private boolean isDeleted;
+  private Boolean isDeleted = false; // デフォルト値を false に設定
 }
 
