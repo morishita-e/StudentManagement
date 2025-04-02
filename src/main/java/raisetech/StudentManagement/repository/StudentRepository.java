@@ -28,6 +28,9 @@ public interface StudentRepository {
   @Select("SELECT * FROM student WHERE id = #{id}")
   Student findStudentById(@Param("id") int id);
 
+  @Select("SELECT * FROM student_course WHERE studentId = #{studentId}")
+  List<StudentCourse> searchStudentCourse(@Param("studentId") int studentId);
+
   @Update("UPDATE student SET name = #{name}, hurigana = #{hurigana}, nicName = #{nicName}, eMailAddress = #{eMailAddress}, liveArea = #{liveArea}, age = #{age}, gender = #{gender}, remark = #{remark}, isDeleted = #{isDeleted} WHERE id = #{id}")
   void updateStudent(Student student);
 
@@ -36,6 +39,7 @@ public interface StudentRepository {
 
   @Select("SELECT courseId, studentId, courseName, startday, endday FROM student_course WHERE studentId = #{studentId}")
   List<StudentCourse> findCoursesByStudentId(@Param("studentId") int studentId);
+
 
   @Update("UPDATE student_course SET courseName = #{courseName} WHERE courseId = #{courseId}")
   void updateStudentCourse(StudentCourse studentCourse);

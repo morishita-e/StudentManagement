@@ -2,6 +2,7 @@ package raisetech.StudentManagement.controller;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import raisetech.StudentManagement.controller.converter.StudentConverter;
 import raisetech.StudentManagement.data.Student;
@@ -33,12 +35,26 @@ public class StudentController {
     this.converter = converter;
     this.studentRepository = studentRepository;
   }
-
+/*
   @GetMapping("/studentList")
   public String getStudentList(Model model) {
     List<Student> students = service.searchStudentList();
     model.addAttribute("students", students);  // ここで "students" を渡していることを確認
     return "studentList";  // studentList.html に遷移
+  }
+*/
+
+  @GetMapping("/studentList")
+  public List<StudentDetail> getStudentList() {
+    List<Student> students = service.searchStudentList();
+
+    List<StudentDetail> studentDetails = new ArrayList<>();
+    for (Student student : students) {
+      List<StudentCourse> studentCourses = service.searchStudentCourse(student.getId());
+      studentDetails.add(converter.convertStudentDetail(student, studentCourses));
+    }
+
+    return studentDetails;
   }
 
   @GetMapping("/student/{id}")
@@ -135,7 +151,7 @@ public class StudentController {
 
     return "redirect:/studentList";
   }
-
+/*
   @PostMapping("/updateStudent")
   public String updateStudent(
       @ModelAttribute StudentDetail studentDetail,
@@ -165,5 +181,11 @@ public class StudentController {
       e.printStackTrace();
       return "errorPage";  // エラーページにリダイレクト
     }
+  }*/
+  @PostMapping("/updateStudent")
+  public ResponseEntity<String> updateStudent(@RequestBody StudentDetail studentDetail){
+    service.updateStudentData(studentDetail);
+    return ResponseEntity.ok("更新処理が成功しました");
   }
+
 }

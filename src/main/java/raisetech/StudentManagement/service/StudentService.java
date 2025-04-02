@@ -24,6 +24,12 @@ public class StudentService {
     return repository.search();
   }
 
+  // 特定の studentId に紐づく受講コースを取得
+  public List<StudentCourse> searchStudentCourse(int studentId) {
+    return repository.searchStudentCourse(studentId);
+  }
+
+
 
   @Transactional
   public void addStudent(StudentDetail studentDetail) {
