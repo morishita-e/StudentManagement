@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import raisetech.StudentManagement.controller.converter.StudentConverter;
 import raisetech.StudentManagement.data.Student;
 import raisetech.StudentManagement.data.StudentCourse;
@@ -21,6 +21,7 @@ import raisetech.StudentManagement.domain.StudentDetail;
 import raisetech.StudentManagement.repository.StudentRepository;
 import raisetech.StudentManagement.service.StudentService;
 
+@RestController
 @Controller
 public class StudentController {
 
@@ -35,14 +36,6 @@ public class StudentController {
     this.converter = converter;
     this.studentRepository = studentRepository;
   }
-/*
-  @GetMapping("/studentList")
-  public String getStudentList(Model model) {
-    List<Student> students = service.searchStudentList();
-    model.addAttribute("students", students);  // ここで "students" を渡していることを確認
-    return "studentList";  // studentList.html に遷移
-  }
-*/
 
   @GetMapping("/studentList")
   public List<StudentDetail> getStudentList() {
@@ -58,32 +51,9 @@ public class StudentController {
   }
 
   @GetMapping("/student/{id}")
-  public String getStudentDetail(@PathVariable int id, Model model) {
-    try {
-      // 指定されたIDの受講生情報を取得
-      Student student = service.searchStudentById(id);
-
-      // 受講生のコース情報を取得
-      List<StudentCourse> studentCourses = service.searchStudentcourseByStudentId(id);
-
-      // `StudentDetail` にまとめる
-      StudentDetail studentDetail = new StudentDetail();
-      studentDetail.setStudent(student);
-      studentDetail.setStudentCourse(studentCourses);
-
-      // 画面にデータを渡す
-      model.addAttribute("studentDetail", studentDetail);
-
-      // studentDetail.html に遷移
-      return "studentDetail";
-
-    } catch (RuntimeException e) {
-      // エラーメッセージを設定して、元のページに戻る
-      model.addAttribute("errorMessage", "指定された学生が見つかりません。");
-      return "redirect:/studentList";  // もしくは元のページにリダイレクト
-    }
+  public StudentDetail getStudentDetail(@PathVariable int id) {
+    return service.searchStudentDetailById(id);
   }
-
 
   @GetMapping("/newStudent")
   public String newStudent(Model model) {
@@ -143,15 +113,25 @@ public class StudentController {
   }
 
   @PostMapping("/registerStudent")
-  public String registerStudent(@ModelAttribute StudentDetail studentDetail, BindingResult result) {
-    if (result.hasErrors()) {
-      return "registerStudent";
-    }
-    service.addStudent(studentDetail);
-
-    return "redirect:/studentList";
+  public ResponseEntity<StudentDetail>  registerStudent(@RequestBody StudentDetail studentDetail) {
+    StudentDetail responseStudentDetail = service.addStudent(studentDetail);
+    return ResponseEntity.ok(responseStudentDetail);
   }
+
+  @PostMapping("/updateStudent")
+  public ResponseEntity<String> updateStudent(@RequestBody StudentDetail studentDetail){
+    service.updateStudentData(studentDetail);
+    return ResponseEntity.ok("更新処理が成功しました");
+  }
+
 /*
+  @GetMapping("/studentList")
+  public String getStudentList(Model model) {
+    List<Student> students = service.searchStudentList();
+    model.addAttribute("students", students);  // ここで "students" を渡していることを確認
+    return "studentList";  // studentList.html に遷移
+  }
+
   @PostMapping("/updateStudent")
   public String updateStudent(
       @ModelAttribute StudentDetail studentDetail,
@@ -181,11 +161,33 @@ public class StudentController {
       e.printStackTrace();
       return "errorPage";  // エラーページにリダイレクト
     }
-  }*/
-  @PostMapping("/updateStudent")
-  public ResponseEntity<String> updateStudent(@RequestBody StudentDetail studentDetail){
-    service.updateStudentData(studentDetail);
-    return ResponseEntity.ok("更新処理が成功しました");
   }
 
+  @GetMapping("/student/{id}")
+  public String getStudentDetail(@PathVariable int id, Model model) {
+    try {
+      // 指定されたIDの受講生情報を取得
+      Student student = service.searchStudentById(id);
+
+      // 受講生のコース情報を取得
+      List<StudentCourse> studentCourses = service.searchStudentcourseByStudentId(id);
+
+      // `StudentDetail` にまとめる
+      StudentDetail studentDetail = new StudentDetail();
+      studentDetail.setStudent(student);
+      studentDetail.setStudentCourse(studentCourses);
+
+      // 画面にデータを渡す
+      model.addAttribute("studentDetail", studentDetail);
+
+      // studentDetail.html に遷移
+      return "studentDetail";
+
+    } catch (RuntimeException e) {
+      // エラーメッセージを設定して、元のページに戻る
+      model.addAttribute("errorMessage", "指定された学生が見つかりません。");
+      return "redirect:/studentList";  // もしくは元のページにリダイレクト
+    }
+  }
+*/
 }

@@ -32,7 +32,7 @@ public class StudentService {
 
 
   @Transactional
-  public void addStudent(StudentDetail studentDetail) {
+  public StudentDetail addStudent(StudentDetail studentDetail) {
     Student student = studentDetail.getStudent();
     student.setIsDeleted(false);
     repository.registerStudent(student);
@@ -44,7 +44,7 @@ public class StudentService {
       repository.registerStudentCourse(studentCourse);
     }
 
-
+    return studentDetail;
   }
 
   @Transactional
@@ -74,16 +74,20 @@ public class StudentService {
     return courses;
   }
 
-
-  public Student searchStudentById(int id) {
+  public StudentDetail searchStudentDetailById(int id) {
     Student student = repository.findStudentById(id);
-
-    // 学生が見つからない場合は例外を投げる
     if (student == null) {
       throw new RuntimeException("受講生が見つかりません: " + id);
     }
 
-    return student;
+    // コース情報を取得
+    List<StudentCourse> courses = repository.findCoursesByStudentId(id);
 
+    // StudentDetail に詰める
+    StudentDetail studentDetail = new StudentDetail();
+    studentDetail.setStudent(student);
+    studentDetail.setStudentCourse(courses);
+
+    return studentDetail;
   }
 }
