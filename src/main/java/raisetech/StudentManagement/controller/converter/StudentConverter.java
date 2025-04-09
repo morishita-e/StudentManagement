@@ -8,48 +8,36 @@ import raisetech.StudentManagement.data.Student;
 import raisetech.StudentManagement.data.StudentCourse;
 import raisetech.StudentManagement.domain.StudentDetail;
 
+/**
+ * 受講生詳細を受講生や受講生コース情報、もしくはその逆の変換を行うコンバーターです。
+ */
+
 @Component
 public class StudentConverter {
 
-  public List<StudentDetail> convertStudentDetails(List<Student> students,
-      List<StudentCourse> studentCourses) {
+  /**
+   * 受講生IDに紐づく受講生コース情報をマッピングする。 受講生コース情報は受講生に対して複数存在するのでループを回して受講生情報を組み立てる。
+   *
+   * @param studentList
+   * @param studentCourseList
+   * @return 受講生詳細情報のリスト
+   */
+
+  public List<StudentDetail> convertStudentDetails(List<Student> studentList,
+      List<StudentCourse> studentCourseList) {
     List<StudentDetail> studentDetails = new ArrayList<>();
-    students.forEach(student -> {
-      StudentDetail studentDetail = new StudentDetail();
-      studentDetail.setStudent(student);
+    studentList.forEach(student -> {
+          StudentDetail studentDetail = new StudentDetail();
+          studentDetail.setStudent(student);
 
-      List<StudentCourse> convertStudentCourses = studentCourses.stream()
-          .filter(studentCourse -> student.getId().equals(studentCourse.getStudentId()))
-          .collect(Collectors.toList());
-      studentDetail.setStudentCourse(convertStudentCourses);
-      studentDetails.add(studentDetail);
-    });
+          List<StudentCourse> convertStudentCourseList = studentCourseList.stream()
+              .filter(studentCourse -> student.getId().equals(studentCourse.getStudentId()))
+              .collect(Collectors.toList());
 
+          studentDetail.setStudentCourseList(convertStudentCourseList);
+          studentDetails.add(studentDetail);
+        }
+    );
     return studentDetails;
   }
-
-  //  単一のStudentとそのコースの情報を使ってStudentDetailを作成
-  public StudentDetail convertStudentDetail(Student student, List<StudentCourse> studentCourses) {
-    StudentDetail studentDetail = new StudentDetail();
-    studentDetail.setStudent(student);
-
-    List<StudentCourse> convertStudentCourses = studentCourses.stream()
-        .filter(studentCourse -> student.getId().equals(studentCourse.getStudentId()))
-        .collect(Collectors.toList());
-    studentDetail.setStudentCourse(convertStudentCourses);
-
-    return studentDetail;
-  }
-
-  public static StudentDetail createStudentDetail(Student student) {
-    StudentDetail detail = new StudentDetail();
-    detail.setStudent(student);
-
-    return detail;
-  }
-
-
 }
-
-
-
