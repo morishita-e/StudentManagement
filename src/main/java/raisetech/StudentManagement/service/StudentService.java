@@ -111,4 +111,5 @@ public class StudentService {
     studentDetail.getStudentCourseList()
         .forEach(studentCourse -> repository.updateStudentCourse(studentCourse));
   }
+
 }
