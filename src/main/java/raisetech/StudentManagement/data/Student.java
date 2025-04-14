@@ -45,5 +45,6 @@ public class Student {
   @Size(max = 100, message = "備考は100文字以内で入力してください")
   private String remark;
   private Boolean isDeleted = false; // デフォルト値を false に設定
+
 }
 
