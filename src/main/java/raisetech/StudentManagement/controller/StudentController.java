@@ -1,30 +1,27 @@
 package raisetech.StudentManagement.controller;
 
-import java.util.Arrays;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import raisetech.StudentManagement.data.Student;
-import raisetech.StudentManagement.data.StudentCourse;
 import raisetech.StudentManagement.domain.StudentDetail;
 import raisetech.StudentManagement.repository.StudentRepository;
 import raisetech.StudentManagement.service.StudentService;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 
 /**
 受講生の検索や登録、更新などを行うREST APIを受け付けるControllerです。
  */
+@Validated
 @RestController
-@Controller
 public class StudentController {
 
   private StudentService service;
@@ -40,7 +37,6 @@ public class StudentController {
    *
    * @return 受講生一覧(全件)
    */
-
   @GetMapping("/studentList")
   public List<StudentDetail> getStudentList() {
     return service.searchStudentList();
@@ -51,9 +47,8 @@ public class StudentController {
    * @param  id 受講生ID
    * @return 受講生
    */
-
   @GetMapping("/student/{id}")
-  public StudentDetail getStudentDetail(@PathVariable int id) {
+  public StudentDetail getStudentDetail(@PathVariable @Min(1) @Max(99999) int id) {
     return service.searchStudentDetailById(id);
   }
 
@@ -64,7 +59,7 @@ public class StudentController {
    */
 
   @PostMapping("/registerStudent")
-  public ResponseEntity<StudentDetail>  registerStudent(@RequestBody StudentDetail studentDetail) {
+  public ResponseEntity<StudentDetail>  registerStudent(@RequestBody @Valid StudentDetail studentDetail) {
     StudentDetail responseStudentDetail = service.addStudent(studentDetail);
     return ResponseEntity.ok(responseStudentDetail);
   }
@@ -77,7 +72,7 @@ public class StudentController {
    */
 
   @PutMapping("/updateStudent")
-  public ResponseEntity<String> updateStudent(@RequestBody StudentDetail studentDetail){
+  public ResponseEntity<String> updateStudent(@RequestBody @Valid StudentDetail studentDetail){
     service.updateStudentData(studentDetail);
     return ResponseEntity.ok("更新処理が成功しました");
   }
