@@ -34,6 +34,9 @@ dependencies {
 	// バリデーション（Hibernate Validator）
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+	// OpenAPI Generator
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
+
 	//便利機能、ユーティリティ
 	implementation 'org.apache.commons:commons-lang3:3.14.0'
 

@@ -79,5 +79,8 @@ public interface StudentRepository {
 
   void updateStudentCourse(StudentCourse studentCourse);
 
+  // メールアドレスから受講生を検索
+  Student findStudentByEmail(@Param("email") String email);
+
   List<StudentCourse> findCoursesByStudentId(@Param("studentId") int studentId);
 }
