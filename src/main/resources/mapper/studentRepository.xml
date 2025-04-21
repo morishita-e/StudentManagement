@@ -30,7 +30,7 @@
   </insert>
 
   <!-- 受講生コース情報の新規登録　IDは自動採番 -->
-  <insert id="registerStudentCourse" >
+  <insert id="registerStudentCourse" useGeneratedKeys="true" keyProperty="courseId" parameterType="raisetech.StudentManagement.data.StudentCourse">
     INSERT INTO student_course (studentId, courseName, startday, endday)
     VALUES (#{studentId}, #{courseName}, #{startday}, #{endday})
   </insert>
@@ -44,6 +44,11 @@
   <update id="updateStudentCourse" parameterType="raisetech.StudentManagement.data.StudentCourse">
     UPDATE student_course SET courseName = #{courseName} WHERE courseId = #{courseId}
   </update>
+
+  <!-- メールアドレスで受講生を検索 -->
+  <select id="findStudentByEmail" resultType="raisetech.StudentManagement.data.Student">
+    SELECT * FROM student WHERE eMailAddress = #{email}
+  </select>
 
   <select id="findCoursesByStudentId" resultType="raisetech.StudentManagement.data.StudentCourse">
     SELECT courseId, studentId, courseName, startday, endday FROM student_course WHERE studentId = #{studentId}

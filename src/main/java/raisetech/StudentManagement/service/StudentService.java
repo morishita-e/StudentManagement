@@ -9,6 +9,7 @@ import raisetech.StudentManagement.controller.converter.StudentConverter;
 import raisetech.StudentManagement.data.Student;
 import raisetech.StudentManagement.data.StudentCourse;
 import raisetech.StudentManagement.domain.StudentDetail;
+import raisetech.StudentManagement.exceptionHandler.DuplicateResourceException;
 import raisetech.StudentManagement.repository.StudentRepository;
 
 /**
@@ -65,10 +66,36 @@ public class StudentService {
   public StudentDetail addStudent(StudentDetail studentDetail) {
     Student student = studentDetail.getStudent();
     student.setIsDeleted(false);
-    repository.registerStudent(student);
+
+    // ✅ メールアドレスの重複チェック
+    List<Student> existingStudents = repository.search();
+    for (Student existing : existingStudents) {
+      if (existing.getEMailAddress().equalsIgnoreCase(student.getEMailAddress())) {
+        throw new DuplicateResourceException("このメールアドレスはすでに使用されています: " + student.getEMailAddress());
+      }
+    }
+
+    // 受講生を登録
+    repository.registerStudent(student); // 新規学生の登録
+
+    // 登録後に学生IDを取得し、それをコース情報に設定する
+    int studentId = student.getId();  // 登録された学生のID
+
+    // 受講生コースリストに対して処理を行う
     studentDetail.getStudentCourseList().forEach(studentCourse -> {
+      // コース名が空であればエラーをスロー
+      if (studentCourse.getCourseName() == null || studentCourse.getCourseName().isEmpty()) {
+        throw new IllegalArgumentException("コース名は必須です");
+      }
+
+      // studentIdが自動採番された値であることを確認し、設定
+      studentCourse.setStudentId(studentId);  // 受講生IDを設定
+
+      // コースの日付などの初期化
       initStudentsCourse(studentDetail, studentCourse);
-      repository.registerStudentCourse(studentCourse);
+
+      // 受講生コース情報を登録
+      repository.registerStudentCourse(studentCourse);  // ここで自動採番されるはず
     });
 
     return studentDetail;
