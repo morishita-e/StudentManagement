@@ -47,11 +47,12 @@ public class StudentController {
     return service.searchStudentList();
   }
 
-  /** 受講生詳細の索です。IDに紐づく任意の受講生情報を取得します。
+  /** 受講生詳細の検索です。IDに紐づく任意の受講生情報を取得します。
    *
    * @param  id 受講生ID
    * @return 受講生
    */
+  @Operation(summary = "受講生詳細検索", description = "受講生の詳細情報を検索します。")
   @GetMapping("/student/{id}")
   public StudentDetail getStudentDetail(@PathVariable @Min(1) @Max(99999) int id) {
     return service.searchStudentDetailById(id);
@@ -75,7 +76,7 @@ public class StudentController {
    * @param studentDetail 受講生詳細
    * @return 実行結果
    */
-
+  @Operation(summary = "受講生新規登録", description = "新規受講生を登録します")
   @PutMapping("/updateStudent")
   public ResponseEntity<String> updateStudent(@RequestBody @Valid StudentDetail studentDetail){
     service.updateStudentData(studentDetail);
