@@ -133,6 +133,41 @@ verify(repository, times(1)).findCoursesByStudentId(studentId);
   }
 
   @Test
+  void 受講生詳細更新_複数コースの場合も正常に更新される() {
+    // モックデータ準備
+    Student student = new Student();
+    student.setId(1);
+    student.setName("Updated Name");
+
+    // コースを2件用意
+    StudentCourse course1 = new StudentCourse();
+    course1.setStudentId(1);
+    course1.setCourseName("Updated Course 1");
+
+    StudentCourse course2 = new StudentCourse();
+    course2.setStudentId(1);
+    course2.setCourseName("Updated Course 2");
+
+    List<StudentCourse> studentCourses = Arrays.asList(course1, course2);
+    StudentDetail studentDetail = new StudentDetail(student, studentCourses);
+
+    // モック設定
+    when(repository.findStudentById(1)).thenReturn(student);
+    doNothing().when(repository).updateStudent(student);
+    doNothing().when(repository).updateStudentCourse(course1);
+    doNothing().when(repository).updateStudentCourse(course2);
+
+    // テスト対象実行
+    sut.updateStudentData(studentDetail);
+
+    // 検証
+    verify(repository).findStudentById(1);
+    verify(repository).updateStudent(student);
+    verify(repository).updateStudentCourse(course1);
+    verify(repository).updateStudentCourse(course2);
+  }
+
+  @Test
   void 受講生詳細登録_メールアドレス重複エラー() {
     // モックデータの準備
     Student student = new Student();
@@ -152,35 +187,6 @@ verify(repository, times(1)).findCoursesByStudentId(studentId);
 
     // サービスメソッドの呼び出し
     assertThrows(DuplicateResourceException.class, () -> sut.addStudent(studentDetail)); // 例外がスローされることを確認
-  }
-
-  @Test
-  void 受講生詳細登録_コース名が空に場合() {
-    // モックデータの準備
-    Student student = new Student();
-    student.setEMailAddress("Test@example.com");
-    student.setName("Test test");
-    student.setIsDeleted(false);
-
-    StudentCourse studentCourse = new StudentCourse();
-
-    // コース名が空
-    studentCourse.setCourseName("");
-
-    List<StudentCourse> studentCourses = Arrays.asList(studentCourse);
-    StudentDetail studentDetail = new StudentDetail(student, studentCourses);
-
-    // モックリポジトリの設定
-    when(repository.search()).thenReturn(Collections.emptyList());  //メールアドレスの重複はなし
-
-    doAnswer(invocation -> {
-      Student savedStudent = invocation.getArgument(0);
-      savedStudent.setId(1);                                        // 仮IDをセット
-      return null;
-    }).when(repository).registerStudent(any(Student.class));        // ※registerStudentCourseは呼ばれない想定なので、モック不要
-
-    // サービスメソッドの呼び出し
-    assertThrows(IllegalArgumentException.class, () -> sut.addStudent(studentDetail)); // 例外がスローされることを確認
   }
 
   @Test
@@ -209,6 +215,51 @@ verify(repository, times(1)).findCoursesByStudentId(studentId);
 
     // 終了日が1年後であること
     assertTrue(studentCourse.getEndday().isEqual(now.plusYears(1)) || studentCourse.getEndday().isAfter(now.plusYears(1)));
+  }
 
+  @Test
+  void 受講生詳細更新_正常に更新がされる場合() {
+    // モックデータ準備
+    Student student = new Student();
+    student.setId(1);                    // IDをセット
+    student.setName("Updated Name");
+
+    StudentCourse studentCourse = new StudentCourse();
+    studentCourse.setStudentId(1);
+    studentCourse.setCourseName("Updated Course");
+
+    List<StudentCourse> studentCourses = Arrays.asList(studentCourse);
+    StudentDetail studentDetail = new StudentDetail(student, studentCourses);
+
+    // モックリポジトリの設定
+    when(repository.findStudentById(1)).thenReturn(student);         // 学生が存在するとする
+    doNothing().when(repository).updateStudent(student);             // 学生更新処理モック
+    doNothing().when(repository).updateStudentCourse(studentCourse); // コース更新処理モック
+
+    // テスト対象メソッドを呼び出し
+    sut.updateStudentData(studentDetail);
+
+    // 呼び出されたか検証
+    verify(repository).findStudentById(1);
+    verify(repository).updateStudent(student);
+    verify(repository).updateStudentCourse(studentCourse);
+  }
+
+  @Test
+  void 受講生詳細更新_存在しないIDによるエラー発生() {
+    // モックデータ準備
+    Student student = new Student();
+    student.setId(999);                // 存在しないID
+    student.setName("Name");
+
+    StudentDetail studentDetail = new StudentDetail(student, Collections.emptyList());
+
+    // モックリポジトリの設定
+    when(repository.findStudentById(999)).thenReturn(null); // 該当なし
+
+    // 例外が発生するか確認
+    RuntimeException exception = assertThrows(RuntimeException.class, () -> sut.updateStudentData(studentDetail));
+
+    assertTrue(exception.getMessage().contains("999は見つかりませんでした"));
   }
 }

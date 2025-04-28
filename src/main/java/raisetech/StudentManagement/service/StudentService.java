@@ -81,21 +81,12 @@ public class StudentService {
     // 登録後に学生IDを取得し、それをコース情報に設定する
     int studentId = student.getId();  // 登録された学生のID
 
-    // 受講生コースリストに対して処理を行う
+    // コース情報を登録
     studentDetail.getStudentCourseList().forEach(studentCourse -> {
-      // コース名が空であればエラーをスロー
-      if (studentCourse.getCourseName() == null || studentCourse.getCourseName().isEmpty()) {
-        throw new IllegalArgumentException("コース名は必須です");
-      }
+      studentCourse.setStudentId(studentId);  // 自動採番されたstudentIdを設定
 
-      // studentIdが自動採番された値であることを確認し、設定
-      studentCourse.setStudentId(studentId);  // 受講生IDを設定
-
-      // コースの日付などの初期化
-      initStudentsCourse(studentDetail, studentCourse);
-
-      // 受講生コース情報を登録
-      repository.registerStudentCourse(studentCourse);  // ここで自動採番されるはず
+      initStudentsCourse(studentDetail, studentCourse); // 必要な初期化があればここで
+      repository.registerStudentCourse(studentCourse);
     });
 
     return studentDetail;
@@ -123,10 +114,9 @@ public class StudentService {
 
   @Transactional
   public void updateStudentData(StudentDetail studentDetail) {
-
     Student student = studentDetail.getStudent();
 
-    // 学生IDが存在しない場合、エラーをスロー
+    // 学生IDが存在するかチェック、エラーはスロー
     if (repository.findStudentById(student.getId()) == null) {
       throw new RuntimeException(student.getId() + "は見つかりませんでした");
     }
@@ -134,9 +124,8 @@ public class StudentService {
     // 学生情報を更新
     repository.updateStudent(student);
 
-    // コース情報がある場合は更新
-    studentDetail.getStudentCourseList()
-        .forEach(studentCourse -> repository.updateStudentCourse(studentCourse));
+    // コース情報があれば、まとめて更新
+    studentDetail.getStudentCourseList().forEach(repository::updateStudentCourse);
   }
 
 }
