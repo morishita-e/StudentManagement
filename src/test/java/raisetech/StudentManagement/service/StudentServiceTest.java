@@ -1,18 +1,18 @@
 package raisetech.StudentManagement.service;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -106,9 +106,16 @@ verify(repository, times(1)).findCoursesByStudentId(studentId);
     StudentDetail studentDetail = new StudentDetail(student, studentCourses);
 
     // モックリポジトリの設定
-    when(repository.search()).thenReturn(Collections.emptyList());      // メールアドレスの重複はなし
-    doNothing().when(repository).registerStudent(student);              // 学生登録処理のモック
-    doNothing().when(repository).registerStudentCourse(studentCourse);  // コース登録処理のモック
+    when(repository.search()).thenReturn(Collections.emptyList());// メールアドレスの重複はなし
+
+    doAnswer(invocation -> {
+      Student savedStudent = invocation.getArgument(0);
+      savedStudent.setId(1); // 仮IDを設定
+      return null;
+    }
+    ).when(repository).registerStudent(any(Student.class));       // 学生登録時にIDをセット
+
+    doNothing().when(repository).registerStudentCourse(any(StudentCourse.class)); // コース登録モック
 
     // サービスメソッドの呼び出し
     StudentDetail result = sut.addStudent(studentDetail);
@@ -153,6 +160,7 @@ verify(repository, times(1)).findCoursesByStudentId(studentId);
     Student student = new Student();
     student.setEMailAddress("Test@example.com");
     student.setName("Test test");
+    student.setIsDeleted(false);
 
     StudentCourse studentCourse = new StudentCourse();
 
@@ -163,7 +171,13 @@ verify(repository, times(1)).findCoursesByStudentId(studentId);
     StudentDetail studentDetail = new StudentDetail(student, studentCourses);
 
     // モックリポジトリの設定
-    when(repository.search()).thenReturn(Collections.emptyList());                     //メールアドレスの重複はなし
+    when(repository.search()).thenReturn(Collections.emptyList());  //メールアドレスの重複はなし
+
+    doAnswer(invocation -> {
+      Student savedStudent = invocation.getArgument(0);
+      savedStudent.setId(1);                                        // 仮IDをセット
+      return null;
+    }).when(repository).registerStudent(any(Student.class));        // ※registerStudentCourseは呼ばれない想定なので、モック不要
 
     // サービスメソッドの呼び出し
     assertThrows(IllegalArgumentException.class, () -> sut.addStudent(studentDetail)); // 例外がスローされることを確認
