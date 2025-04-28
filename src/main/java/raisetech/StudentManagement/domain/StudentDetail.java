@@ -19,8 +19,10 @@ import raisetech.StudentManagement.data.StudentCourse;
 public class StudentDetail {
 
   @Valid
+  @Schema(description = "受講生の基本情報")
   private Student student;
 
   @Valid
+  @Schema(description = "受講生が受講しているコースの情報リスト")
   private List<StudentCourse> studentCourseList = new ArrayList<>();
 }
